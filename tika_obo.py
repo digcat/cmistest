@@ -1,4 +1,6 @@
 import os
+import webscript
+import gethavens
 
 def getTikaAddress():
     if os.path.exists('/usr/bin/docker'):
@@ -52,5 +54,23 @@ def getHavenSummary(docName):
     except:
         return "" 
 
-    return  str(str(havenrecord['rank']) + " Rank Most Secretive Tax Haven, " + havenrecord['country'] + " also has a FSI Value "
-+ str(havenrecord['fsivalue']) + ' and a global scale of ' + str(havenrecord['globalscale']))
+    return  str(havenrecord['country'] + " is rated " \
+            + str(havenrecord['rank']) \
+            + " globally most secretive tax haven, in the FSI." \
+            + havenrecord['country'] + " also has a FSI Value " \
+            + str(havenrecord['fsivalue']) + ' and a global scale of ' \
+            + str(havenrecord['globalscale']))
+
+def getHavenTitle(docName):
+    try:
+        havenrecord = gethavens.getPropertiesHaven(docName)
+    except:
+        return "" 
+    customtitle = havenrecord['country'] + " ranked " + str(havenrecord['rank']) + " most secretive" 
+    return customtitle 
+
+def doCopyAndTagUp(sourcefile,destination):
+    return webscript.copyAndTagUp(sourcefile,destination) 
+
+def doGetTagsFromTika(sourcefile,occur):
+    return webscript.topGetTagsForPdf(sourcefile,occur,10)

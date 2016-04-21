@@ -59,6 +59,8 @@ def dumpPdfMetadata(filename):
     print "IPOFTIKA " 
     tikaUrl = tika_obo.getTikaAddress()
     print tikaUrl
+    print "FILENAME "
+    print filename
     print "STOPPED HERE"
     parsed = parser.from_file(filename, tikaUrl)
     metadata = []
@@ -69,6 +71,8 @@ def dumpPdfMetadata(filename):
     print "RESOURCE NAME " + metadata['resourceName'] 
     for tag in metadata:
         print tag,metadata[tag]
+
+    print tika_obo.doGetTagsFromTika(filename,10)
           
    
 def getExifTagsForFile(filename):
@@ -90,6 +94,7 @@ def printFiles(fileList, path):
             filesProcessed = filesProcessed + 1
             fullFileName = path + "/" + file
             print "debug: copy ->" + fullFileName
+            print "CNT: " + str(len(fileList))
             if fnmatch.fnmatch(file, "*.jpg"):
                 dumpMetadata(fullFileName) 
             if fnmatch.fnmatch(file, "*.pdf"):
@@ -266,19 +271,8 @@ def createCMISDoc(folder, targetClass, docLocalPath, docName, propBag):
         print "Finished adding properties"
         return propsForCreate
 
-    props = createPropertyBag(propBag, targetClass)
-    f = open(docLocalPath, 'rb')
-    newDoc = folder.createDocument(docName, props, contentFile=f)
-    f.close()
-    newDoc.addAspect('P:cm:summarizable')
 
-    props = {'cm:summary': tika_obo.getHavenSummary(docName) }
-    newDoc.updateProperties(props)
-    newDoc.addAspect('P:cm:taggable')
-    newDoc.updateProperties(props)
-    newDoc.addAspect('P:cm:generalclassifiable')
-    newDoc.updateProperties(props)
-    print "Adding properties...."
+    print tika_obo.doCopyAndTagUp(docLocalPath,folder.id)
 
 ################################################################
 # main entry point HERE
